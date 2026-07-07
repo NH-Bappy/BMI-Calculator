@@ -1,5 +1,7 @@
 # BMI PRO - Professional BMI Calculator
 
+[![Download APK](https://img.shields.io/badge/Download-APK-brightgreen?style=for-the-badge&logo=android)](https://github.com/NH-Bappy/BMI-Calculator/releases/latest)
+
 BMI PRO is a modern, high-performance Android application built with Jetpack Compose. It provides comprehensive body mass index analysis with a sleek, minimalist design and personalized health metrics.
 
 ## Features
@@ -54,3 +56,9 @@ The core logic of the application resides in the `calculateBMIExtended` function
 3. Toggle between **KG/LBS** and enter your weight.
 4. Toggle between **CM/FT** and enter your height (use decimal for feet, e.g., 5.8).
 5. Click **ANALYZE** to see your results!
+
+## Installation
+
+1. Go to the [Releases](https://github.com/NH-Bappy/BMI-Calculator/releases) page.
+2. Download the `app-debug.apk` file.
+3. On your Android device, open the downloaded file to install it (make sure "Install from Unknown Sources" is enabled).
