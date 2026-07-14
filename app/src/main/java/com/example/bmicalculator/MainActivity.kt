@@ -28,8 +28,9 @@ import java.util.Locale
 
 // Constants for Theme Colors - Light Mode
 val AppBackground = Color(0xFFFFFFFF)
-val AppPrimary = Color(0xFF1A237E) // Deep Navy Blue
+val AppPrimary = Color(0xFF0D47A1) // Rich Blue from Logo
 val AppSecondary = Color(0xFFF5F5F5) // Very Light Grey
+val AppAccent = Color(0xFF00BFA5) // Teal/Green from Logo
 
 class MainActivity : ComponentActivity() {
     /**
@@ -78,6 +79,7 @@ fun BMIApp() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding() // Added to ensure layout adjusts when keyboard appears
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -90,7 +92,7 @@ fun BMIApp() {
                     letterSpacing = 4.sp,
                     color = AppPrimary
                 ),
-                modifier = Modifier.padding(top = 24.dp)
+                modifier = Modifier.padding(top = 48.dp)
             )
 
             // Input Section: Collects user data using custom input fields and toggles
@@ -99,7 +101,16 @@ fun BMIApp() {
                     label = "Gender",
                     options = listOf("MALE", "FEMALE"),
                     selectedIndex = if (isMale) 0 else 1,
-                    onOptionSelected = { isMale = it == 0 }
+                    onOptionSelected = { index ->
+                        val newIsMale = index == 0
+                        if (newIsMale != isMale) {
+                            isMale = newIsMale
+                            weight = ""
+                            height = ""
+                            age = ""
+                            result = null
+                        }
+                    }
                 )
 
                 SimpleInputField(
@@ -138,27 +149,51 @@ fun BMIApp() {
                 )
             }
 
-            // Calculate Button: Triggers the BMI calculation logic with a simulated loading state
-            Button(
-                onClick = {
-                    scope.launch {
-                        isCalculating = true
-                        delay(600) // Simulation of processing time
-                        result = calculateBMIExtended(weight, height, isWeightKg, isHeightCm, age, isMale)
-                        isCalculating = false
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = AppPrimary),
-                shape = RoundedCornerShape(8.dp),
-                enabled = !isCalculating
+            // Action Buttons: Calculate and Cancel
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if (isCalculating) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                } else {
-                    Text("ANALYZE", fontWeight = FontWeight.Bold, color = Color.White)
+                // Calculate Button: Triggers the BMI calculation logic
+                Button(
+                    onClick = {
+                        scope.launch {
+                            isCalculating = true
+                            delay(600) // Simulation of processing time
+                            result = calculateBMIExtended(weight, height, isWeightKg, isHeightCm, age, isMale)
+                            isCalculating = false
+                        }
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AppPrimary),
+                    shape = RoundedCornerShape(8.dp),
+                    enabled = !isCalculating
+                ) {
+                    if (isCalculating) {
+                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    } else {
+                        Text("ANALYZE", fontWeight = FontWeight.Bold, color = Color.White)
+                    }
+                }
+
+                // Cancel Button: Resets all input fields
+                OutlinedButton(
+                    onClick = {
+                        weight = ""
+                        height = ""
+                        age = ""
+                        result = null
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp),
+                    border = BorderStroke(1.dp, AppPrimary.copy(alpha = 0.2f)),
+                    shape = RoundedCornerShape(8.dp),
+                    enabled = !isCalculating
+                ) {
+                    Text("CANCEL", fontWeight = FontWeight.Bold, color = AppPrimary)
                 }
             }
 
@@ -285,7 +320,7 @@ fun ResultDisplay(result: BMIResult) {
 
         Text(
             text = result.dramaMessage.uppercase(),
-            color = if (result.category == "Normal") Color(0xFF2E7D32) else Color.Red,
+            color = if (result.category == "Normal") AppAccent else Color.Red,
             fontWeight = FontWeight.Black,
             fontSize = 14.sp,
             textAlign = TextAlign.Center,
